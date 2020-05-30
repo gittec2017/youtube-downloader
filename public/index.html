@@ -13,19 +13,44 @@
 <p>
     <a href="https://github.com/Athlon1600/youtube-downloader">https://github.com/Athlon1600/youtube-downloader</a>
 </p>
-
-<form>
-    <input type="text" value="https://www.youtube.com/watch?v=YSuHrTfcikU" size="90" id="txt_url">
-    <input type="button" id="btn_fetch" class="btn btn-primary" value="Fetch">
+<div id="video_formats"></div>
+<form class="form-inline">
+    <input type="text" class="form-control" value="https://www.youtube.com/watch?v=YSuHrTfcikU" size="90" id="txt_url">
+    <input type="button" id="btn_fetch" class="btn btn-primary" value="Submit">
 </form>
 
-<video width="900" height="750" controls>
+<form class="form-inline">
+<input type="text" class="form-control" value="1" size="5" id="video_tag">
+<input type="button" id="show_video" class="btn btn-primary" value="Submit">
+</form>
+
+<video width="900" height="650" controls>
     <source src="" type="video/mp4"/>
     <em>Sorry, your browser doesn't support HTML5 video.</em>
 </video>
 
 <script>
     $(function () {
+
+    	var video_urls = [];
+
+    	$("#show_video").click(function () {
+    		var videoIndex = $("#video_tag").val()
+    		var first = video_urls[videoIndex]
+    		// alert(first['itag']);
+    		console.log(first['url'])
+    		if (typeof first === 'undefined') {
+    			alert('No video found!');
+    			return;
+    		}
+
+    		var stream_url = 'stream.php?url=' + encodeURIComponent(first['url']);
+
+    		var video = $("video");
+    		video.attr('src', stream_url);
+    		video[0].load();
+    	});
+
 
         $("#btn_fetch").click(function () {
 
@@ -48,12 +73,21 @@
                     return;
                 }
 
-                // first link with video
-                var first = links.find(function (link) {
-                    return link['format'].indexOf('video') !== -1;
+                video_urls = links;
+                var video_formats = '';
+                $.each(video_urls, function( index, value ) {
+                	// alert( index + ": " + value.itag );
+                	video_formats += index + " : " + value.itag+ " : "+value.format+"----"
                 });
+                
+                $("#video_formats").html(video_formats);
 
-                if (typeof first === 'undefined') {
+                // first link with video
+               /* var first = links.find(function (link) {
+                    return link['format'].indexOf('video') !== -1;
+                });*/
+
+                /*if (typeof first === 'undefined') {
                     alert('No video found!');
                     return;
                 }
@@ -62,7 +96,7 @@
 
                 var video = $("video");
                 video.attr('src', stream_url);
-                video[0].load();
+                video[0].load();*/
             });
 
         });
@@ -72,4 +106,3 @@
 
 </body>
 </html>
-
